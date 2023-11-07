@@ -1,10 +1,12 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { seat } from './JsonData.js'
+import { useLocation } from 'react-router-dom'
 
 function SeatLayout() {
+    const location = useLocation();
     const [state, setState] = React.useState({
         activeFlight: seat[0]?.flight_seat_details?.lstAirSeat[0],
-        passenger: 5,
+        passenger: location?.state?.passenger,
         selectedSeats: {},
         active: 0,
         selected: {},
@@ -25,7 +27,6 @@ function SeatLayout() {
                 }
             });
         }
-        console.log(state?.selected)
         if (state?.selected[state.active]?.includes(d?.SeatNumber)) {
             // Item is already selected
             // Filter out the selected item
