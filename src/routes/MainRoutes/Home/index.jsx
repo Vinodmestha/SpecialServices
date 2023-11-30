@@ -14,6 +14,9 @@ function Home() {
 
     //handle submit
     const addPassengers = () => {
+        // switch(passengers){
+        //     case
+        // }
         if (!passengers) {
             setError("Please select passengers input")
             setIsValid(false)
@@ -22,8 +25,7 @@ function Home() {
             setError("Passengers cannot select more than 5")
             setIsValid(false)
             return false
-        }
-        else if (passengers > 5) {
+        } else if (passengers > 5) {
             setError("Please select 5 passengers")
             setIsValid(false)
             return false
@@ -44,21 +46,22 @@ function Home() {
         }
     }
     return (
-        <div className='max-w-screen-xl mx-auto flex flex-col justify-center items-center h-screen'>
-            <div className='w-1/2 mx-auto'>
-                <div className='grid gap-4'>
-                    <div className='border-2 rounded border-gray-200 px-2 py-1 '>
+        <div className='lg:max-w-screen-xl mx-auto flex flex-col justify-center items-center h-screen'>
+            <div className=' w-4/5 lg:w-1/2 mx-auto'>
+                <h1 className="font-poppins text-4xl font-semibold text-red-400 text-center mb-20">Flight Seat, Meal and Baggage </h1>
+                <div className='flex gap-4'>
+                    <div className={`w-3/4 border-2 rounded-md border-gray-200 px-2 py-1 ${error ? "border-2 border-red-500" : ""} `}>
                         <input
                             type="number"
                             placeholder='Select passengers'
-                            className='w-full h-8 outline-none px-2 font-semibold'
+                            className={`w-full h-8 outline-none px-2 font-semibold `}
                             value={passengers}
                             onChange={(e) => {
                                 handleInput(e)
                             }} />
                     </div>
                     <button
-                        className='w-full border bg-blue-500 text-white font-semibold rounded py-2 px-3 outline-none'
+                        className='w-1/2 border bg-blue-500 text-white font-semibold rounded-md py-2 px-3 outline-none'
                         onClick={() => {
                             addPassengers()
                         }}
@@ -66,19 +69,17 @@ function Home() {
                     </button>
                 </div>
                 <p className='text-red-500 font-semibold'>{error}</p>
-            </div>
-            <h3 className='text-xl font-semibold my-3'>{isValid && showPassengers ? "Passengers : " : ""} {isValid && showPassengers}</h3>
-            <div className='w-1/2 mx-auto'>
-                <div className='mt-5 flex'>
+                <h3 className='text-left text-xl font-semibold my-3'>Passengers  {isValid && showPassengers ? ": " : ""} {isValid && showPassengers}</h3>
+                <div className='mt-5 flex flex-col sm:flex-row gap-y-4'>
                     <button
-                        className='w-full py-1 px-3 border-2  rounded-md hover:bg-red-400 hover:text-white mr-4 font-semibold text-lg '
+                        className='w-full py-1 px-3 border-2  rounded-md bg-gray-50 hover:bg-red-400 hover:text-white sm:mr-4 font-semibold text-lg '
                         onClick={() => {
                             handleNavigate("/seat-layout")
 
                         }}>
                         Seat Layout
                     </button>
-                    <button className='w-full py-1 px-3 border-2 rounded-md hover:text-white hover:bg-red-400 font-semibold text-lg ' onClick={() => {
+                    <button className='w-full py-1 px-3 border-2 rounded-md bg-gray-50 hover:text-white hover:bg-red-400 font-semibold text-lg ' onClick={() => {
                         handleNavigate("/special-service")
                     }}>
                         Special Service

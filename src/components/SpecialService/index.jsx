@@ -12,8 +12,7 @@ const data = [
         name: "Baggage"
     }
 ]
-function SpecialService() {
-
+function SpecialService(props) {
     const [state, setState] = useState({
         activeType: "Meal",
         meal: [],
