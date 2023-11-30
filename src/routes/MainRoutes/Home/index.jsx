@@ -47,8 +47,8 @@ function Home() {
     }
     return (
         <div className='lg:max-w-screen-xl mx-auto flex flex-col justify-center items-center h-screen'>
-            <div className=' w-4/5 lg:w-1/2 mx-auto'>
-                <h1 className="font-poppins text-4xl font-semibold text-red-400 text-center mb-20">Flight Seat, Meal and Baggage </h1>
+            <div className='w-4/5 lg:w-1/2 mx-auto'>
+                <h1 className="text-4xl font-semibold text-red-400 text-center mb-20">Flight Seat, Meal and Baggage </h1>
                 <div className='flex gap-4'>
                     <div className={`w-3/4 border-2 rounded-md border-gray-200 px-2 py-1 ${error ? "border-2 border-red-500" : ""} `}>
                         <input
