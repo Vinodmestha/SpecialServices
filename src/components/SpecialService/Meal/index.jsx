@@ -1,14 +1,13 @@
 import React from 'react'
 
 function Meal(props) {
-    console.log(props)
     const { prevState } = props
     return (
         <div className='max-w-screen-xl mx-auto'>
             <div className='my-4 flex justify-center'>
                 {prevState?.meal?.map((item, index) => {
                     return (
-                        <span key={index} className={`border py-1 px-2 mr-2 rounded-md cursor-pointer ${prevState?.activeTab === index ? "bg-red-400" : ""}`}
+                        <span key={index} className={`border py-1 px-2 mr-2 rounded-md cursor-pointer ${prevState?.activeTab === index ? "bg-red-400 text-white" : ""}`}
                             onClick={() => {
                                 props?.handleTabChange(item, index)
                             }}
@@ -18,7 +17,7 @@ function Meal(props) {
                     )
                 })}
             </div>
-            <div className='grid grid-cols-3 gap-5'>
+            <div className='grid lg:grid-cols-3 sm:grid-clos-2 grid-cols-1 gap-5'>
                 {prevState?.activeFlight?.lstSSRDetails?.map?.((d, i) => {
                     !d?.qty && Object.assign(d, { qty: 0 });
                     return d?.SSRType === "1" && (
@@ -35,13 +34,14 @@ function Meal(props) {
                             <div>
                                 <button
                                     className='border-2 bg-white px-1 rounded-md font-semibold'
-                                    disabled={prevState?.passenger === prevState?.ssrId?.length}
+                                    // disabled={prevState?.passenger === prevState?.ssrId?.length}
                                     onClick={() => {
                                         props?.handleInc(d)
                                     }}>Inc</button>
                                 <div className='text-center font-semibold'>{d?.qty}</div>
                                 <button className='border-2 bg-white px-1 rounded-md font-semibold'
-                                    disabled={d?.qty === 0} onClick={() => {
+                                    // disabled={d?.qty === 0}
+                                    onClick={() => {
                                         props?.handleDec(d)
                                     }}>Dec</button>
                             </div>

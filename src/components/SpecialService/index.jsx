@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { SSRData } from './JsonData'
+import { SSR } from '../../db/JsonData'
 
 import Meal from './Meal'
 import Baggage from './Baggage'
+import { useLocation } from 'react-router-dom'
 
 const data = [
     {
@@ -12,7 +13,8 @@ const data = [
         name: "Baggage"
     }
 ]
-function SpecialService(props) {
+function SpecialService() {
+    const location = useLocation()
     const [state, setState] = useState({
         activeType: "Meal",
         meal: [],
@@ -22,18 +24,25 @@ function SpecialService(props) {
 
         //ssr
         count: 0,
-        ssrId: [],
-        ssrData: [],
+        ssrId: {},
+        ssrData: {},
+        activeMeal: 0,
 
-        passenger: 5,
-        //  selected special items include in arr
-        selectedItems: {}
+
+        // baggage 
+        activeBTab: 0,
+        countBag: 0,
+        filteredBaggage: {},
+        filteredBaggageId: {},
+        bagArr: [],
+
+        passenger: location?.state?.passenger,
     })
     useEffect(() => {
         let m = [];
         let b = []
-        SSRData?.data?.special_services?.map((d) => d?.lstSSRDetails?.filter((item) => item?.SSRType === "1" && m.push(d)))
-        SSRData?.data?.special_services?.map((d) => d?.lstSSRDetails?.filter((item) => item?.SSRType === "2" && b.push(d)))
+        SSR?.data?.special_services?.map((d) => d?.lstSSRDetails?.filter((item) => item?.SSRType === "1" && m.push(d)))
+        SSR?.data?.special_services?.map((d) => d?.lstSSRDetails?.filter((item) => item?.SSRType === "2" && b.push(d)))
         let rmvDup1 = [...new Set(m)];
         let rmvDup2 = [...new Set(b)]
         setState((prev) => {
@@ -48,43 +57,64 @@ function SpecialService(props) {
     }, [])
 
     const handleInc = (d) => {
+        if (!Object.hasOwn(state?.ssrId, state?.activeTab)) {
+            Object.assign(state?.ssrId, {
+                [state?.activeTab]: []
+            })
+            Object.assign(state?.ssrData, {
+                [state?.activeTab]: []
+            })
+        }
+        if (state?.ssrId[state?.activeTab]?.length + 1 > state?.passenger) {
+            alert("More than travellers cannot select")
+            return false
+        }
         d.qty++;
         setState((prev) => {
             return {
                 ...prev,
-                ssrId: [...state?.ssrId, d?.id],
-                ssrData: [...state?.ssrData, d],
-                count: state?.count + 1
+                ssrId: {
+                    ...prev?.ssrId,
+                    [state?.activeTab]: [...prev?.ssrId[state?.activeTab], d?.id]
+                },
+                ssrData: {
+                    ...prev?.ssrData,
+                    [state?.activeTab]: [...prev?.ssrData[state?.activeTab], d]
+                },
+                count: prev?.count + 1
             }
         })
 
     }
     const handleDec = (d) => {
-        console.log(d)
-        if (state?.count <= 0) {
-            return;
-        } else {
-            if (state?.ssrId?.includes(d?.id)) {
-                d.qty--;
-                for (let a in state?.ssrId) {
-
-                    console.log(state?.ssrId[a], a)
-                    if (state?.ssrId[a] === d?.id) {
-                        state?.ssrId.splice(a, 1);
-                        break;
-                    }
+        if (state?.count === 0 || d?.qty === 0) {
+            // alert("Please add items")
+            return false
+        }
+        d.qty--;
+        if (state?.ssrId[state.activeTab]?.includes(d?.id)) {
+            for (let a in state?.ssrId[state.activeTab]) {
+                if (state?.ssrId[state.activeTab][a] === d?.id) {
+                    state?.ssrId[state.activeTab].splice(a, 1);
+                    break;
                 }
-                setState((prev) => {
-                    return {
-                        ...prev,
-                        ssrId: [...state?.ssrId],
-                        count: state?.count - 1
-                    }
-                })
             }
+            return setState((prev) => {
+                return {
+                    ...prev,
+                    ssrId: {
+                        ...prev?.ssrId,
+                        [state.activeTab]: state?.ssrId[state?.activeTab]
+                    },
+                    ssrData: {
+                        ...prev?.ssrData,
+                        [state?.activeTab]: state?.ssrData[state?.activeTab], d
+                    },
+                    count: state?.count - 1
+                }
+            })
         }
     }
-
     const handleTabChange = (d, i) => {
         setState((prev) => {
             return {
@@ -94,14 +124,88 @@ function SpecialService(props) {
             }
         })
     }
+
+    //baggage
+    const handleBTab = (item, i) => {
+        setState((prev) => {
+            return {
+                ...prev,
+                activeBTab: i,
+                activeFlight: item
+            }
+        })
+    }
+    const handleBInc = (d) => {
+        if (!Object.hasOwn(state?.filteredBaggageId, state?.activeBTab)) {
+            Object.assign(state?.filteredBaggageId, {
+                [state?.activeBTab]: []
+            })
+            Object.assign(state?.filteredBaggage, {
+                [state?.activeBTab]: []
+            })
+        }
+        if (state?.filteredBaggageId[state.activeBTab]?.length + 1 > state?.passenger) {
+            alert(`cannot select more than ${state?.passenger} `)
+            return false;
+        }
+        d.qty++;
+        setState((prev) => {
+            return {
+                ...prev,
+                countBag: state?.countBag + 1,
+                filteredBaggage: {
+                    ...prev?.filteredBaggage,
+                    [state?.activeBTab]: [...prev?.filteredBaggage[state?.activeBTab], d]
+                },
+                filteredBaggageId: {
+                    ...prev?.filteredBaggageId,
+                    [state?.activeBTab]: [...prev?.filteredBaggageId[state?.activeBTab], d?.id]
+                },
+            }
+        })
+
+    }
+    const handleBDec = (d) => {
+        if (state?.countBag === 0 || d?.qty === 0) {
+            return false;
+        }
+        d.qty--;
+        if (state?.filteredBaggageId[state?.activeBTab]?.includes(d?.id)) {
+            for (let i in state?.filteredBaggageId[state?.activeBTab]) {
+                if (state?.filteredBaggageId[state?.activeBTab][i] === d?.id) {
+                    state?.filteredBaggageId[state?.activeBTab]?.splice(i, 1);
+                    break;
+                }
+            }
+            for (const i in state?.filteredBaggage[state?.activeBTab]) {
+                if (state?.filteredBaggage[state?.activeBTab][i]?.id === d?.id) {
+                    state?.filteredBaggage[state?.activeBTab]?.splice(i, 1);
+                    break;
+                }
+            }
+            setState((prev) => {
+                return {
+                    ...prev,
+                    countBag: state.countBag - 1,
+                    filteredBaggage: {
+                        ...prev.filteredBaggage,
+                        [state?.activeBTab]: state?.filteredBaggage[state?.activeBTab]
+                    },
+                    filteredBaggageId: {
+                        ...prev.filteredBaggageId,
+                        [state?.activeBTab]: state?.filteredBaggageId[state?.activeBTab]
+                    }
+                }
+            })
+        }
+    }
     const { activeType, baggage } = state
-    console.log(state?.activeType, state?.activeFlight)
     return (
         <div className='max-w-screen-xl mx-auto'>
             {data?.map((d, i) => {
                 return (
                     <button key={i}
-                        className={`border-2 py-1 px-2 mr-3 rounded-lg ${activeType === d?.name ? "bg-red-400" : ""}`}
+                        className={`border-2 py-1 px-2 mr-3 rounded-lg ${activeType === d?.name ? "bg-red-400 text-white" : ""}`}
                         onClick={() => {
                             setState((prev) => {
                                 return {
@@ -116,7 +220,7 @@ function SpecialService(props) {
                 activeType === "Meal" && <Meal prevState={state} handleTabChange={handleTabChange} handleInc={handleInc} handleDec={handleDec} />
             }
             {
-                activeType === "Baggage" ? <Baggage baggage={baggage} /> : null
+                activeType === "Baggage" ? <Baggage prevState={state} baggage={baggage} handleBTab={handleBTab} handleTabChange={handleTabChange} handleBInc={handleBInc} handleBDec={handleBDec} /> : null
             }
         </div>
     )

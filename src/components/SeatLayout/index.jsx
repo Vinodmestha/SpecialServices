@@ -7,85 +7,119 @@ function SeatLayout() {
     const [state, setState] = React.useState({
         activeFlight: seat[0]?.flight_seat_details?.lstAirSeat[0],
         passenger: location?.state?.passenger,
-        selectedSeats: {},
+        filteredIdSeats: {},
         active: 0,
-        selected: {},
-        selectedShow: []
+        filteredId: {},
+        filteredObj: {}
     })
 
     const handleSelectSeats = (d) => {
-        if (!Object.hasOwn(state?.selected, state.active) &&
-            !Object.hasOwn(state?.selectedShow, state.active)) {
-            let newObj = Object.assign(state?.selected, { [state.active]: [] })
-            let newObj2 = Object.assign(state?.selectedShow, { [state.active]: [] })
-            console.log(newObj, newObj2)
+        if (!Object.hasOwn(state?.filteredId, state.active) && !Object.hasOwn(state?.filteredObj, state.active)) {
+            let newObj = Object.assign(state?.filteredId, { [state.active]: [] })
+            let newObj2 = Object.assign(state?.filteredObj, { [state.active]: [] })
             setState((prev) => {
                 return {
                     ...prev,
-                    selected: newObj,
-                    selectedShow: newObj2
+                    filteredId: newObj,
+                    filteredObj: newObj2
                 }
             });
         }
-        if (state?.selected[state.active]?.includes(d?.SeatNumber)) {
-            // Item is already selected
-            // Filter out the selected item
-            let a = state?.selected[state?.active]?.filter((item) => {
+        setState((prev) => {
+            return {
+                ...prev,
+                filteredId: {
+                    ...state?.filteredId,
+                    [state.active]: [...state?.filteredId[state.active], d?.SeatNumber]
+                },
+                filteredObj: {
+                    ...state?.filteredObj,
+                    [state.active]: [...state?.filteredObj[state.active], d]
+                }
+
+            }
+        })
+        // }
+
+        // includes check with id 
+        if (state?.passenger === state.filteredId[state?.active]?.length &&
+            !state.filteredId[state?.active]?.includes(d?.SeatNumber) &&
+            state.filteredId[state?.active][state.filteredId[state?.active].length - 1]) {
+            return state?.filteredId[state.active]?.pop()
+        }
+        if (state?.filteredId[state.active]?.includes(d?.SeatNumber)) {
+            // Item is already filteredId
+            // Filter out the filteredId item
+            let a = state?.filteredId[state?.active]?.filter((item) => {
                 return item !== d?.SeatNumber;
             });
-            let b = state?.selectedShow[state?.active]?.filter((item) => {
-                return item !== d?.SeatNumber;
-            });
-            console.log(a)
             // Update the state with the filtered array
             setState((prev) => {
                 return {
                     ...prev,
-                    selected: {
-                        ...state?.selected,
+                    filteredId: {
+                        ...state?.filteredId,
                         [state?.active]: a
                     },
-                    selectedShow: {
-                        ...state?.selectedShow,
+                }
+            })
+        }
+        // let isContained = false;
+
+        // for (const obj of state.filteredObj[state?.active]) {
+        //     if (obj?.SeatNumber === d?.SeatNumber) {
+        //         isContained = true;
+        //         break;
+        //     }
+        // }
+        console.log(state?.filteredObj[state.active]?.map(a => a?.SeatNumber), !state?.filteredObj[state.active]?.map(a => a?.SeatNumber)?.includes(d?.SeatNumber))
+        // state.filteredObj[state?.active]?.length &&
+        // !state?.filteredObj[state?.active]?.filter((item) => {
+        //     item.SeatNumber?.includes(d?.SeatNumber)
+        // }) &&
+        // filter with objects
+        if (state?.passenger === state.filteredObj[state?.active]?.length && state?.filteredObj[state.active]?.map(a => a?.SeatNumber)?.includes(d?.SeatNumber) && state.filteredObj[state?.active][state.filteredObj[state?.active]?.length - 1]) {
+            console.log("first")
+            return state?.filteredObj[state.active]?.pop()
+        }
+        // console.log(state?.filteredObj[state.active]?.includes(d))
+        if (state?.filteredObj[state.active]?.map(a => a?.SeatNumber)?.includes(d?.SeatNumber)) {
+            console.log("first", state?.filteredObj[state.active])
+            // Item is already filteredId
+            // Filter out the filteredId item
+
+            let b = state?.filteredObj[state?.active]?.filter((item) => {
+                return item.SeatNumber !== d?.SeatNumber;
+            });
+            console.log(b, "filtered")
+            // Update the state with the filtered array
+            setState((prev) => {
+                return {
+                    ...prev,
+                    filteredObj: {
+                        ...state?.filteredObj,
                         [state?.active]: b
                     }
                 }
             })
-        } else {
-            let arr = []
-            arr.push(d?.SeatNumber,)
-            console.log("first", state?.selected)
-            // Add the item to the selected array
-            setState((prev) => {
-                return {
-                    ...prev,
-                    selected: {
-                        ...state?.selected,
-                        [state.active]: [...state?.selected[state.active], d?.SeatNumber]
-                    },
-                    selectedShow: {
-                        ...state?.selectedShow,
-                        [state.active]: [...state?.selectedShow[state.active], d?.SeatNumber]
-                    }
-                }
-            })
         }
+        // else {
+        //     setState((prev) => {
+        //         return {
+        //             ...prev,
+        //             filteredObj: {
+        //                 ...state?.filteredObj,
+        //                 [state.active]: [...state?.filteredObj[state.active], d]
+        //             }
+        //         }
+        //     })
+        // }
     }
-    console.log(state?.selected, state?.selectedShow)
+
+    console.log(state?.filteredObj[state.active]?.map(d => d?.SeatNumber), state?.filteredId[state.active])
+    // disabled={d.SeatStatus === 1 || state?.passenger === state.filteredId[state?.active]?.length & !state.filteredId[state?.active]?.includes(d?.SeatNumber)}
     return (
         <div className='max-w-screen-xl mx-auto' >
-            <div className='flex justify-center items-center'>
-                {
-                    state?.selectedShow[state?.active]?.map((item, i) => {
-                        return (
-                            <div key={i}>
-                                {item?.SeatNumber}
-                            </div>
-                        )
-                    })
-
-                }
-            </div>
             <div className='my-4'>
                 <h4 className='text-xl font-semibold text-center'>Active Route Flight</h4>
                 <div className='flex justify-center items-center my-3'>
@@ -106,18 +140,19 @@ function SeatLayout() {
                             </div>
                         )
                     })}
+
                 </div>
-                <div>
+                <div className='relative'>
                     {seat[0]?.flight_seat_details?.lstAirSeat[state.active]?.LstRow?.map((seat, i) => {
                         return (
                             <div key={i} style={{ display: 'flex', justifyContent: 'center' }}>
                                 {seat?.lstColumn?.map((d, i) => {
                                     return (
                                         <button
-                                            className={`flex justify-center items-center w-10 h-10 p-1 m-2 text-sm border rounded-lg cursor-pointer font-semibold ${state.selected[state?.active]?.includes(d?.SeatNumber) ? 'bg-red-400 text-white' : ""}
+                                            className={`flex justify-center items-center w-10 h-10 p-1 m-2 text-sm border rounded-lg cursor-pointer font-semibold ${state.filteredId[state?.active]?.includes(d?.SeatNumber) ? 'bg-red-400 text-white' : ""}
                                             ${d.SeatStatus === 1 ? "bg-gray-300 cursor-not-allowed" : ""}`}
                                             key={i}
-                                            disabled={d.SeatStatus === 1 || state?.passenger === state.selected[state?.active]?.length & !state.selected[state?.active]?.includes(d?.SeatNumber)}
+                                            disabled={d.SeatStatus === 1}
                                             onClick={() => {
                                                 handleSelectSeats(d);
                                             }
@@ -131,6 +166,17 @@ function SeatLayout() {
                             </div>
                         )
                     })}
+                    {state?.filteredId[state.active]?.length >= 0 ? <div className='absolute top-0'>
+                        <h1 className='bg-gray-100 rounded-lg px-2 py-2 '>Passengers details</h1>
+                        <div>
+                            {state?.filteredObj[state.active]?.map((item, i) => (
+                                <div key={i} className='flex justify-between'>
+                                    <div>{item?.SeatNumber}</div>
+                                    <div>{item?.SeatFare?.TotalFare}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div> : null}
                 </div>
             </div>
         </div >

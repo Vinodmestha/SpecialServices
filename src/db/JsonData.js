@@ -1,4 +1,4 @@
-export const SSRData={
+export const SSR={
     "status": true,
     "message": "Special services details.",
     "error": [],

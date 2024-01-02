@@ -1,77 +1,18 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 
-function Baggage(props) {
-    const [state, setState] = useState({
-        activeFlight: {},
-        activeTab: 0,
-
-        //ssr
-        count: 0,
-        ssrId: [],
-        ssrData: [],
-
-        passenger: 5
-    })
-    useEffect(() => {
-        setState((prev) => {
-            return {
-                ...prev,
-                activeFlight: props?.baggage[0]
-            }
-        })
-    }, [props])
-    const handleInc = (d) => {
-        d.qty++;
-        setState((prev) => {
-            return {
-                ...prev,
-                ssrId: [...state?.ssrId, d?.id],
-                ssrData: [...state?.ssrData, d],
-                count: state?.count + 1
-            }
-        })
-
-    }
-    const handleDec = (d) => {
-        console.log(d)
-        if (state?.count <= 0) {
-            return;
-        } else {
-            if (state?.ssrId?.includes(d?.id)) {
-                d.qty--;
-                for (let a in state?.ssrId) {
-
-                    console.log(state?.ssrId[a], a)
-                    if (state?.ssrId[a] === d?.id) {
-                        state?.ssrId.splice(a, 1);
-                        break;
-                    }
-                }
-                setState((prev) => {
-                    return {
-                        ...prev,
-                        ssrId: [...state?.ssrId],
-                        count: state?.count - 1
-                    }
-                })
-            }
-        }
-    }
-    console.log(state?.activeFlight)
+function Baggage({ prevState, baggage, handleBTab, handleBInc, handleBDec }) {
+    console.log(prevState)
     return (
         <div className='max-w-screen-xl mx-auto'>
+            <div>
+                <h2 className='my-5 text-xl font-bold'>Travellers : {prevState?.passenger}</h2>
+            </div>
             <div className='my-4 flex justify-center'>
-                {props?.baggage?.map((item, index) => {
+                {baggage?.map((item, index) => {
                     return (
-                        <span key={index} className={`border py-1 px-2 mr-2 rounded-md cursor-pointer ${state?.activeTab === index ? "bg-red-400" : ""}`}
+                        <span key={index} className={`border py-1 px-2 mr-2 rounded-md cursor-pointer ${prevState?.activeBTab === index ? "bg-red-400 text-white" : ""}`}
                             onClick={() => {
-                                setState((prev) => {
-                                    return {
-                                        ...prev,
-                                        activeFlight: item,
-                                        activeTab: index
-                                    }
-                                })
+                                handleBTab(item, index)
                             }}
                         >
                             {item?.Origin}-{item?.destination}
@@ -79,8 +20,8 @@ function Baggage(props) {
                     )
                 })}
             </div>
-            <div className='grid grid-cols-3 gap-5'>
-                {state?.activeFlight?.lstSSRDetails?.map?.((d, i) => {
+            <div className='grid lg:grid-cols-3 sm:grid-clos-2 grid-cols-1 gap-5'>
+                {prevState?.activeFlight?.lstSSRDetails?.map?.((d, i) => {
                     !d?.qty && Object.assign(d, { qty: 0 })
                     return d?.SSRType === "2" && (
                         <div className='flex justify-between mx-3 bg-gray-200 p-2 rounded-lg' key={i}>
@@ -96,14 +37,14 @@ function Baggage(props) {
                             <div>
                                 <button
                                     className='border-2 bg-white px-1 rounded-md font-semibold'
-                                    disabled={state?.passenger === state?.ssrId?.length}
+                                    // disabled={prevState?.passenger === prevState?.ssrId?.length}
                                     onClick={() => {
-                                        handleInc(d)
+                                        handleBInc(d)
                                     }}>Inc</button>
                                 <div className='text-center font-semibold'>{d?.qty}</div>
                                 <button className='border-2 bg-white px-1 rounded-md font-semibold'
-                                    disabled={d?.qty === 0} onClick={() => {
-                                        handleDec(d)
+                                    onClick={() => {
+                                        handleBDec(d)
                                     }}>Dec</button>
                             </div>
                         </div>
