@@ -28,9 +28,9 @@ const Multicity = () => {
         })
     }
     const handleAdd = () => {
-        if (state?.formsInputs?.length >= 5) {
-            return false
-        }
+        // if (state?.formsInputs?.length >= 5) {
+        //     return false
+        // }
         setState((prev) => {
             return {
                 ...prev,
@@ -47,11 +47,11 @@ const Multicity = () => {
     }
     const handleRemove = (index) => {
         const rows = [...state.formsInputs];
-        console.log(rows)
-        for (let i in rows) {
-            console.log(rows[i])
-            if (rows[i] === index) {
-                console.log(i, rows[i])
+        console.log(rows, index)
+        for (let i = 0; i <= rows?.length; i++) {
+            console.log(rows, i)
+            if (i === index) {
+                console.log(i)
                 rows.splice(i, 1);
                 break;
             }
@@ -63,7 +63,6 @@ const Multicity = () => {
             }
         })
     }
-    console.log(state?.formsInputs)
     return (
         <main>
             <section className=''>
@@ -108,7 +107,7 @@ const Multicity = () => {
                     <button className='border px-5 py-1 rounded shadow outline-none' onClick={() => handleSubmit()}>Submit</button>
                 </div>
                 <div>
-                    <button className='border px-5 py-1 rounded shadow outline-none' onClick={() => handleAdd()}>Add City</button>
+                    <button className='border px-5 py-1 rounded shadow outline-none' onClick={() => handleAdd()} disabled={state?.formsInputs?.length === 5}>Add City</button>
                 </div>
 
             </div>

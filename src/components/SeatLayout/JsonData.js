@@ -1,4 +1,4 @@
-export const seat = [
+export const seatArr = [
     {
         "flight_seat_details": {
             "error": null,
